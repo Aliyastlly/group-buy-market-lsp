@@ -26,7 +26,8 @@
     <select id="queryGroupBuyActivityList" resultMap="dataMap">
         SELECT * FROM group_buy_activity
     </select>
-    <select id="queryValidGroupBuyActivity" resultType="com.ali.infrastructure.dao.po.GroupBuyActivity">
+    <select id="queryValidGroupBuyActivity" parameterType="com.ali.infrastructure.dao.po.GroupBuyActivity"
+            resultMap="dataMap">
         select
             activity_id, activity_name, source, channel, goods_id,
             discount_id, group_type, take_limit_count, target, valid_time,

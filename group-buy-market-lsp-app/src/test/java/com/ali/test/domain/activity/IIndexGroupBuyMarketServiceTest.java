@@ -4,6 +4,7 @@ package com.ali.test.domain.activity;
 import com.ali.domain.activity.adapter.repository.IActivityRepository;
 import com.ali.domain.activity.model.entity.MarketProductEntity;
 import com.ali.domain.activity.model.entity.TrialBalanceEntity;
+import com.ali.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import com.ali.domain.activity.model.valobj.SkuVO;
 import com.ali.domain.activity.service.IIndexGroupBuyMarketService;
 import com.alibaba.fastjson.JSON;
@@ -44,6 +45,21 @@ public class IIndexGroupBuyMarketServiceTest {
         SkuVO skuVO = repository.querySkuByGoodsId(goodsId);
         log.info("查询结果: {}", JSON.toJSONString(skuVO));
         Assert.assertNotNull(skuVO);
+    }
+    @Test
+    public void test_queryGroupBuyActivityDiscountVO() {
+        // 准备测试数据
+        String source = "s01";
+        String channel = "c01";
+
+        // 执行测试
+        log.info("查询参数: source={}, channel={}", source, channel);
+        GroupBuyActivityDiscountVO result = repository.queryGroupBuyActivityDiscountVO(source, channel);
+        // 详细断言
+        log.info("查询结果: {}", JSON.toJSONString(result));
+        Assert.assertNotNull(result);
+        // 添加更多断言验证返回对象的具体属性
+        // Assert.assertEquals(expectedValue, result.getSomeProperty());
     }
 
 
