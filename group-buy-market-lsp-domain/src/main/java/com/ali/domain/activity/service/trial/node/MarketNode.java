@@ -4,16 +4,20 @@ import com.ali.domain.activity.model.entity.MarketProductEntity;
 import com.ali.domain.activity.model.entity.TrialBalanceEntity;
 import com.ali.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import com.ali.domain.activity.model.valobj.SkuVO;
+import com.ali.domain.activity.service.discount.IDiscountCalculateService;
 import com.ali.domain.activity.service.trial.AbstractGroupBuyMarketSupport;
 import com.ali.domain.activity.service.trial.factory.DefaultActivityStrategyFactory;
 import com.ali.domain.activity.service.trial.thread.QueryGroupBuyActivityDiscountVOThreadTask;
 import com.ali.domain.activity.service.trial.thread.QuerySkuVOFromDBThreadTask;
 import com.ali.types.design.framework.tree.StrategyHandler;
+import com.ali.types.exception.AppException;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
+import com.ali.types.enums.ResponseCode;
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.Map;
 import java.util.concurrent.*;
 
 @Slf4j
@@ -24,6 +28,8 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
     private ThreadPoolExecutor threadPoolExecutor;
     @Resource
     private EndNode endNode;
+    @Resource
+    private Map<String, IDiscountCalculateService> discountCalculateServiceMap;
 
     @Override
     protected void multiThread(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws ExecutionException, InterruptedException, TimeoutException {
@@ -57,7 +63,20 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
     public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
         log.info("拼团商品查询试算服务-MarketNode userId:{} requestParameter:{}", requestParameter.getUserId(), JSON.toJSONString(requestParameter));
 
-        // todo lsp 拼团优惠试算
+        GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
+        GroupBuyActivityDiscountVO.GroupBuyDiscount groupBuyDiscount = groupBuyActivityDiscountVO.getGroupBuyDiscount();
+
+        SkuVO skuVO = dynamicContext.getSkuVO();
+
+        IDiscountCalculateService discountCalculateService = discountCalculateServiceMap.get(groupBuyDiscount.getMarketPlan());
+        if (null == discountCalculateService) {
+            log.info("不存在{}类型的折扣计算服务，支持类型为:{}", groupBuyDiscount.getMarketPlan(), JSON.toJSONString(discountCalculateServiceMap.keySet()));
+            throw new AppException(ResponseCode.E0001.getCode(), ResponseCode.E0001.getInfo());
+        }
+
+        // 折扣价格
+        BigDecimal deductionPrice = discountCalculateService.calculate(requestParameter.getUserId(), skuVO.getOriginalPrice(), groupBuyDiscount);
+        dynamicContext.setDeductionPrice(deductionPrice);
 
         return router(requestParameter, dynamicContext);
     }
