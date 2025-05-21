@@ -47,20 +47,32 @@ public class IIndexGroupBuyMarketServiceTest {
         Assert.assertNotNull(skuVO);
     }
     @Test
-    public void test_queryGroupBuyActivityDiscountVO() {
-        // 准备测试数据
-        String source = "s01";
-        String channel = "c01";
+    public void test_indexMarketTrial_error() throws Exception {
+        MarketProductEntity marketProductEntity = new MarketProductEntity();
+        marketProductEntity.setUserId("xiaofuge");
+        marketProductEntity.setSource("s01");
+        marketProductEntity.setChannel("c01");
+        marketProductEntity.setGoodsId("9890002");
 
-        // 执行测试
-        log.info("查询参数: source={}, channel={}", source, channel);
-        GroupBuyActivityDiscountVO result = repository.queryGroupBuyActivityDiscountVO(source, channel);
-        // 详细断言
-        log.info("查询结果: {}", JSON.toJSONString(result));
-        Assert.assertNotNull(result);
-        // 添加更多断言验证返回对象的具体属性
-        // Assert.assertEquals(expectedValue, result.getSomeProperty());
+        TrialBalanceEntity trialBalanceEntity = indexGroupBuyMarketService.indexMarketTrial(marketProductEntity);
+        log.info("请求参数:{}", JSON.toJSONString(marketProductEntity));
+        log.info("返回结果:{}", JSON.toJSONString(trialBalanceEntity));
     }
+//    @Test
+//    public void test_queryGroupBuyActivityDiscountVO() {
+//        // 准备测试数据
+//        String source = "s01";
+//        String channel = "c01";
+//
+//        // 执行测试
+//        log.info("查询参数: source={}, channel={}", source, channel);
+//        GroupBuyActivityDiscountVO result = repository.queryGroupBuyActivityDiscountVO(source, channel);
+//        // 详细断言
+//        log.info("查询结果: {}", JSON.toJSONString(result));
+//        Assert.assertNotNull(result);
+//        // 添加更多断言验证返回对象的具体属性
+//        // Assert.assertEquals(expectedValue, result.getSomeProperty());
+//    }
 
 
 

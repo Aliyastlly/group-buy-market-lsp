@@ -3,12 +3,15 @@ package com.ali.infrastructure.adapter.repository;
 import com.ali.domain.activity.adapter.repository.IActivityRepository;
 import com.ali.domain.activity.model.valobj.DiscountTypeEnum;
 import com.ali.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
+import com.ali.domain.activity.model.valobj.SCSkuActivityVO;
 import com.ali.domain.activity.model.valobj.SkuVO;
 import com.ali.infrastructure.dao.IGroupBuyActivityDao;
 import com.ali.infrastructure.dao.IGroupBuyDiscountDao;
+import com.ali.infrastructure.dao.ISCSkuActivityDao;
 import com.ali.infrastructure.dao.ISkuDao;
 import com.ali.infrastructure.dao.po.GroupBuyActivity;
 import com.ali.infrastructure.dao.po.GroupBuyDiscount;
+import com.ali.infrastructure.dao.po.SCSkuActivity;
 import com.ali.infrastructure.dao.po.Sku;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -28,19 +31,19 @@ public class ActivityRepository implements IActivityRepository {
     @Resource
     private ISkuDao skuDao;
 
+    @Resource
+    private ISCSkuActivityDao skuActivityDao;
+
     @Override
-    public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(String source, String channel) {
-        // 根据SC渠道值查询配置中最新的1个有效的活动
-        GroupBuyActivity groupBuyActivityReq = new GroupBuyActivity();
-        groupBuyActivityReq.setSource(source);
-        groupBuyActivityReq.setChannel(channel);
-        log.info("开始查询活动数据:{}", groupBuyActivityReq);
-        GroupBuyActivity groupBuyActivityRes = groupBuyActivityDao.queryValidGroupBuyActivity(groupBuyActivityReq);
-        log.info("查询结果:{}", groupBuyActivityRes);
+    public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
+        GroupBuyActivity groupBuyActivityRes = groupBuyActivityDao.queryValidGroupBuyActivityId(activityId);
+        if (null == groupBuyActivityRes) return null;
+
         String discountId = groupBuyActivityRes.getDiscountId();
-        log.info("开始查询优惠数据:{}", discountId);
+
         GroupBuyDiscount groupBuyDiscountRes = groupBuyDiscountDao.queryGroupBuyActivityDiscountByDiscountId(discountId);
-        log.info("查询结果:{}", groupBuyDiscountRes);
+        if (null == groupBuyDiscountRes) return null;
+
         GroupBuyActivityDiscountVO.GroupBuyDiscount groupBuyDiscount = GroupBuyActivityDiscountVO.GroupBuyDiscount.builder()
                 .discountName(groupBuyDiscountRes.getDiscountName())
                 .discountDesc(groupBuyDiscountRes.getDiscountDesc())
@@ -53,9 +56,6 @@ public class ActivityRepository implements IActivityRepository {
         return GroupBuyActivityDiscountVO.builder()
                 .activityId(groupBuyActivityRes.getActivityId())
                 .activityName(groupBuyActivityRes.getActivityName())
-                .source(groupBuyActivityRes.getSource())
-                .channel(groupBuyActivityRes.getChannel())
-                .goodsId(groupBuyActivityRes.getGoodsId())
                 .groupBuyDiscount(groupBuyDiscount)
                 .groupType(groupBuyActivityRes.getGroupType())
                 .takeLimitCount(groupBuyActivityRes.getTakeLimitCount())
@@ -76,6 +76,24 @@ public class ActivityRepository implements IActivityRepository {
                 .goodsId(sku.getGoodsId())
                 .goodsName(sku.getGoodsName())
                 .originalPrice(sku.getOriginalPrice())
+                .build();
+    }
+
+    @Override
+    public SCSkuActivityVO querySCSkuActivityBySCGoodsId(String source, String channel, String goodsId) {
+        SCSkuActivity scSkuActivityReq = new SCSkuActivity();
+        scSkuActivityReq.setSource(source);
+        scSkuActivityReq.setChannel(channel);
+        scSkuActivityReq.setGoodsId(goodsId);
+
+        SCSkuActivity scSkuActivity = skuActivityDao.querySCSkuActivityBySCGoodsId(scSkuActivityReq);
+        if (null == scSkuActivity) return null;
+
+        return SCSkuActivityVO.builder()
+                .source(scSkuActivity.getSource())
+                .chanel(scSkuActivity.getChannel())
+                .activityId(scSkuActivity.getActivityId())
+                .goodsId(scSkuActivity.getGoodsId())
                 .build();
     }
 
