@@ -273,17 +273,21 @@ public interface IRedisService {
 
     RBitSet getBitSet(String key);
 
-    default int getIndexFromUserId(String userId) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] hashBytes = md.digest(userId.getBytes(StandardCharsets.UTF_8));
-            // 将哈希字节数组转换为正整数
-            BigInteger bigInt = new BigInteger(1, hashBytes);
-            // 取模以确保索引在合理范围内
-            return bigInt.mod(BigInteger.valueOf(Integer.MAX_VALUE)).intValue();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5 algorithm not found", e);
-        }
-    }
+//    default int getIndexFromUserId(String userId) {
+//        try {
+//            MessageDigest md = MessageDigest.getInstance("MD5");
+//            byte[] hashBytes = md.digest(userId.getBytes(StandardCharsets.UTF_8));
+//            // 将哈希字节数组转换为正整数
+//            BigInteger bigInt = new BigInteger(1, hashBytes);
+//            // 取模以确保索引在合理范围内
+//            return bigInt.mod(BigInteger.valueOf(Integer.MAX_VALUE)).intValue();
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException("MD5 algorithm not found", e);
+//        }
+//    }
+default int getIndexFromUserId(String userId) {
+    // 直接使用hashCode并取模限制范围
+    return Math.abs(userId.hashCode()) % 1000000;
+}
 
 }
