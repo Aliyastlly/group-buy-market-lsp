@@ -35,6 +35,11 @@ public class DefaultActivityStrategyFactory {
         private SkuVO skuVO;
 
         private BigDecimal deductionPrice;
+
+        private boolean visible;
+
+        private boolean enable;
+
     }
 
 
