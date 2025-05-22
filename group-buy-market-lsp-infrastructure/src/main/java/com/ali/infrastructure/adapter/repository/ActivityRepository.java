@@ -77,6 +77,7 @@ public class ActivityRepository implements IActivityRepository {
     @Override
     public SkuVO querySkuByGoodsId(String goodsId) {
         Sku sku = skuDao.querySkuByGoodsId(goodsId);
+        if (null == sku) return null;
         return SkuVO.builder()
                 .goodsId(sku.getGoodsId())
                 .goodsName(sku.getGoodsName())
@@ -103,9 +104,10 @@ public class ActivityRepository implements IActivityRepository {
     }
 
     @Override
-    public boolean isTagCrowRange(String tagId, String userId) {
+    public boolean isTagCrowdRange(String tagId, String userId) {
         RBitSet bitSet = redisService.getBitSet(tagId);
         if (!bitSet.isExists()) return true;
+        // 判断用户是否存在人群中
         return bitSet.get(redisService.getIndexFromUserId(userId));
     }
 

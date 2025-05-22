@@ -22,22 +22,25 @@ public class TagNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
 
     @Override
     protected TrialBalanceEntity doApply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
-
+        // 获取拼团活动配置
         GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
-        String tagId = groupBuyActivityDiscountVO.getTagId();
 
+        String tagId = groupBuyActivityDiscountVO.getTagId();
         boolean visible = groupBuyActivityDiscountVO.isVisible();
         boolean enable = groupBuyActivityDiscountVO.isEnable();
 
-        if(StringUtils.isBlank(tagId)) {
+        // 人群标签配置为空，则走默认值
+        if (StringUtils.isBlank(tagId)) {
             dynamicContext.setVisible(true);
             dynamicContext.setEnable(true);
             return router(requestParameter, dynamicContext);
         }
 
-        boolean isWithin = repository.isTagCrowRange(tagId,requestParameter.getUserId());
-        dynamicContext.setVisible(visible  ||  isWithin);
-        dynamicContext.setEnable(enable  ||  isWithin);
+        // 是否在人群范围内；visible、enable 如果值为 ture 则表示没有配置拼团限制，那么就直接保证为 true 即可
+        boolean isWithin = repository.isTagCrowdRange(tagId, requestParameter.getUserId());
+        dynamicContext.setVisible(visible || isWithin);
+        dynamicContext.setEnable(enable || isWithin);
+
         return router(requestParameter, dynamicContext);
     }
 
