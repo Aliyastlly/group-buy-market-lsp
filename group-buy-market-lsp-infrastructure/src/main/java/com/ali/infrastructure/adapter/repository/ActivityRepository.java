@@ -13,6 +13,7 @@ import com.ali.infrastructure.dao.po.GroupBuyActivity;
 import com.ali.infrastructure.dao.po.GroupBuyDiscount;
 import com.ali.infrastructure.dao.po.SCSkuActivity;
 import com.ali.infrastructure.dao.po.Sku;
+import com.ali.infrastructure.dcc.DCCService;
 import com.ali.infrastructure.redis.IRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBitSet;
@@ -38,6 +39,9 @@ public class ActivityRepository implements IActivityRepository {
 
     @Resource
     private IRedisService redisService;
+
+    @Resource
+    private DCCService dccService;
 
     @Override
     public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
@@ -109,6 +113,16 @@ public class ActivityRepository implements IActivityRepository {
         if (!bitSet.isExists()) return true;
         // 判断用户是否存在人群中
         return bitSet.get(redisService.getIndexFromUserId(userId));
+    }
+
+    @Override
+    public boolean downgradeSwitch() {
+        return dccService.isDowngradeSwitch();
+    }
+
+    @Override
+    public boolean cutRange(String userId) {
+        return dccService.isCutRange(userId);
     }
 
 }
