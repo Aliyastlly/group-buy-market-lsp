@@ -34,6 +34,8 @@ public class TrialBalanceEntity {
     /** 是否可参与进团 */
     private Boolean isEnable;
 
+    private BigDecimal payPrice;
+
     /** 活动配置信息 */
     private GroupBuyActivityDiscountVO groupBuyActivityDiscountVO;
 

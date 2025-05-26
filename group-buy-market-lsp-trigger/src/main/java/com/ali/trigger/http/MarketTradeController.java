@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.ali.domain.activity.service.IIndexGroupBuyMarketService;
 import com.ali.domain.trade.service.ITradeOrderService;
@@ -37,6 +38,8 @@ public class MarketTradeController implements IMarketTradeService {
     @Resource
     private ITradeOrderService tradeOrderService;
 
+    @RequestMapping(value = "lock_market_pay_order", method = RequestMethod.POST)
+    @Override
     public Response<LockMarketPayOrderResponseDTO> lockMarketPayOrder(LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO) {
         try {
             // 参数
@@ -116,6 +119,7 @@ public class MarketTradeController implements IMarketTradeService {
                             .originalPrice(trialBalanceEntity.getOriginalPrice())
                             .deductionPrice(trialBalanceEntity.getDeductionPrice())
                             .outTradeNo(outTradeNo)
+                            .payPrice(trialBalanceEntity.getPayPrice())
                             .build());
 
             log.info("交易锁单记录(新):{} marketPayOrderEntity:{}", userId, JSON.toJSONString(marketPayOrderEntity));
