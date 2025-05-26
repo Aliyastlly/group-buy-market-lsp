@@ -2,7 +2,9 @@ package com.ali.infrastructure.adapter.repository;
 
 import com.ali.domain.tag.adapter.repository.ITagRepository;
 import com.ali.domain.tag.model.entity.CrowdTagsJobEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBitSet;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +16,7 @@ import com.ali.infrastructure.dao.po.CrowdTagsDetail;
 import com.ali.infrastructure.dao.po.CrowdTagsJob;
 import com.ali.infrastructure.redis.IRedisService;
 import javax.annotation.Resource;
-
+@Slf4j
 @Repository
 public class TagRepository implements ITagRepository {
 
@@ -58,7 +60,14 @@ public class TagRepository implements ITagRepository {
             RBitSet bitSet = redisService.getBitSet(tagId);
             bitSet.set(redisService.getIndexFromUserId(userId), true);
         } catch (DuplicateKeyException ignore) {
-            // 忽略唯一索引冲突
+            // 唯一索引冲突，用户已存在，依然需要确保Redis BitSet状态正确
+            RBitSet bitSet = redisService.getBitSet(tagId);
+            bitSet.set(redisService.getIndexFromUserId(userId), true);
+        } catch (DataIntegrityViolationException e) {
+            // 数据完整性问题（如字段长度超限）
+            log.error("添加标签用户关系失败，数据完整性问题: tagId={}, userId={}, error={}",
+                    tagId, userId, e.getMessage());
+            throw new RuntimeException("添加用户到标签失败: " + e.getMessage(), e);
         }
     }
 
