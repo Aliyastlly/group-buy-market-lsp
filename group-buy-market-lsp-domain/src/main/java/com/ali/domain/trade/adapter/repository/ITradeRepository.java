@@ -1,7 +1,9 @@
 package com.ali.domain.trade.adapter.repository;
 
 import com.ali.domain.trade.model.aggregate.GroupBuyOrderAggregate;
+import com.ali.domain.trade.model.aggregate.GroupBuyTeamSettlementAggregate;
 import com.ali.domain.trade.model.entity.GroupBuyActivityEntity;
+import com.ali.domain.trade.model.entity.GroupBuyTeamEntity;
 import com.ali.domain.trade.model.entity.MarketPayOrderEntity;
 import com.ali.domain.trade.model.valobj.GroupBuyProgressVO;
 
@@ -16,4 +18,8 @@ public interface ITradeRepository {
     Integer queryOrderCountByActivityId(Long activityId, String userId);
 
     GroupBuyActivityEntity queryGroupBuyActivityEntityByActivityId(Long activityId);
+
+    GroupBuyTeamEntity queryGroupBuyTeamByTeamId(String teamId);
+
+    void settlementMarketPayOrder(GroupBuyTeamSettlementAggregate groupBuyTeamSettlementAggregate);
 }

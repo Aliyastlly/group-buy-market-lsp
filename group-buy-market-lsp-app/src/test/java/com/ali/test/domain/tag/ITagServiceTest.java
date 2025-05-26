@@ -36,7 +36,7 @@ public class ITagServiceTest {
         RBitSet bitSet = redisService.getBitSet("RQ_KJHKL98UU78H66554GFDV");
         // 是否存在
         log.info("xiaofuge 存在，预期结果为 true，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("xiaofuge")));
-        log.info("xfg01 存在，预期结果为 true，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("xfg01")));
+        log.info("lsp1 存在，预期结果为 true，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("lsp1")));
         log.info("gudebai 不存在，预期结果为 false，测试结果:{}", bitSet.get(redisService.getIndexFromUserId("gudebai")));
     }
     @Test

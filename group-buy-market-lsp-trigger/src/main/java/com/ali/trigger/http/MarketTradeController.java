@@ -12,6 +12,7 @@ import com.ali.domain.trade.model.entity.PayActivityEntity;
 import com.ali.domain.trade.model.entity.PayDiscountEntity;
 import com.ali.domain.trade.model.entity.UserEntity;
 import com.ali.domain.trade.model.valobj.GroupBuyProgressVO;
+import com.ali.domain.trade.service.ITradeLockOrderService;
 import com.ali.types.enums.ResponseCode;
 import com.ali.types.exception.AppException;
 import com.alibaba.fastjson.JSON;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.ali.domain.activity.service.IIndexGroupBuyMarketService;
-import com.ali.domain.trade.service.ITradeOrderService;
+
 import javax.annotation.Resource;
 import java.util.Objects;
 
@@ -36,7 +37,7 @@ public class MarketTradeController implements IMarketTradeService {
     private IIndexGroupBuyMarketService indexGroupBuyMarketService;
 
     @Resource
-    private ITradeOrderService tradeOrderService;
+    private ITradeLockOrderService tradeOrderService;
 
     @RequestMapping(value = "lock_market_pay_order", method = RequestMethod.POST)
     @Override
