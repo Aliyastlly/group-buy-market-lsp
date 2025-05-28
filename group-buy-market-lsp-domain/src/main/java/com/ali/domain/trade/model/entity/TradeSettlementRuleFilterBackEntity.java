@@ -12,8 +12,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupBuyTeamEntity {
-
+public class TradeSettlementRuleFilterBackEntity {
     /** 拼单组队ID */
     private String teamId;
     /** 活动ID */
@@ -30,5 +29,4 @@ public class GroupBuyTeamEntity {
     private Date validStartTime;
     /** 拼团结束时间 - 拼团有效时长 */
     private Date validEndTime;
-
 }

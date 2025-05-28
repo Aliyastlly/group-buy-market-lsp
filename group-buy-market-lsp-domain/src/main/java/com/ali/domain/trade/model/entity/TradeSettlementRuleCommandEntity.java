@@ -11,8 +11,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TradePaySuccessEntity {
-
+public class TradeSettlementRuleCommandEntity {
     /** 渠道 */
     private String source;
     /** 来源 */
