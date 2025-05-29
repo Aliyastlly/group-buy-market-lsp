@@ -29,5 +29,7 @@ public class PayDiscountEntity {
     private String outTradeNo;
 
     private BigDecimal payPrice;
+    /** 回调通知地址 */
+    private String notifyUrl;
 
 }
