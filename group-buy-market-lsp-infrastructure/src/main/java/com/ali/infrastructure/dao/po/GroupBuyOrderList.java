@@ -1,18 +1,17 @@
 package com.ali.infrastructure.dao.po;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.ali.infrastructure.dao.po.base.Page;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupBuyOrderList {
+public class GroupBuyOrderList extends Page {
 
     /** 自增ID */
     private Long id;
