@@ -1,67 +1,71 @@
-// 工具函数：获取Cookie（支持localStorage备用）
-function getCookie(name) {
-    // 首先尝试从Cookie获取
-    let cookieArr = document.cookie.split(";");
-    for(let i = 0; i < cookieArr.length; i++) {
-        let cookiePair = cookieArr[i].split("=");
-        if(name == cookiePair[0].trim()) {
-            return decodeURIComponent(cookiePair[1]);
-        }
-    }
-    
-    // 如果Cookie失败，尝试从localStorage获取
-    if (name === 'username') {
-        const username = localStorage.getItem('username');
-        const loginTime = localStorage.getItem('loginTime');
-        
-        // 检查是否在24小时内
-        if (username && loginTime) {
-            const now = new Date().getTime();
-            const timeDiff = now - parseInt(loginTime);
-            const hoursDiff = timeDiff / (1000 * 60 * 60);
-            
-            if (hoursDiff < 24) {
-                console.log("从localStorage获取用户信息:", username);
-                return username;
-            } else {
-                // 超过24小时，清除localStorage
-                localStorage.removeItem('username');
-                localStorage.removeItem('loginTime');
-            }
-        }
-    }
-    
-    return null;
-}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小傅哥 - 拼团项目 - 商品详情页</title>
+    <link rel="stylesheet" href="css/index.css">
 
-// 工具函数：生成随机数
-function generateRandomNumber(length) {
-    let result = '';
-    const characters = '0123456789';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
+</head>
+<body>
+<!-- 轮播图 -->
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="./images/sku-13811216-01.png"></div>
+        <div class="swiper-slide"><img src="./images/sku-13811216-02.png"></div>
+        <div class="swiper-slide"><img src="./images/sku-13811216-03.png"></div>
+    </div>
+    <div class="swiper-pagination"></div>
+</div>
 
+<!-- 商品信息 -->
+<div class="product-info">
+    <h1 class="product-title">手写MyBatis：渐进式源码实践（全彩）</h1>
+    <span class="promotion-tag">大促优惠</span>
+    <span class="promotion-text"></span> <!-- 动态填充促销文本 -->
+</div>
+
+<!-- 拼单列表容器 -->
+<div class="group-list">
+    <!-- 动态生成拼团列表 -->
+</div>
+
+<!-- 空白区域 -->
+<div class="area"></div>
+
+<!-- 底部操作栏 -->
+<div class="action-bar">
+    <button class="action-btn buy-alone"></button>
+    <button class="action-btn group-buy"></button>
+</div>
+
+<!-- 支付弹窗 -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h2>请扫码支付</h2>
+        <br/>
+        <p id="paymentAmount" style="color:red;"></p>
+        <img src="./images/sku-13811216-04.png" alt="支付二维码" class="qr-code">
+        <p id="outTradeNo"></p>
+        <div class="button-group">
+            <button id="cancelPayment">取消支付</button>
+            <button id="completePayment">支付完成</button>
+        </div>
+    </div>
+</div>
+<script src="js/index.js"></script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("主页加载完成");
-    
     // 根据测试诉求，设置基础地址
     var baseUrl = "http://127.0.0.1:8091";
 
     // 获取信息
     var userId = getCookie("username");
-    console.log("从Cookie获取的用户ID:", userId);
-    
     if (!userId) {
-        console.log("未找到用户ID，跳转到登录页");
         window.location.href = "login.html"; // 跳转到登录页
         return;
     }
 
-    console.log("开始请求接口数据...");
-    
     // 定义交易单号，如果交易单号不为空，则当前用户已参与拼团交易
     let outTradeNo = "";
 
@@ -78,17 +82,9 @@ document.addEventListener('DOMContentLoaded', function() {
             goodsId: "9890001"
         })
     })
-    .then(response => {
-        console.log("接口响应状态:", response.status);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(res => {
-        console.log("接口返回数据:", res);
-        
-        if(res.code !== '0000') {
-            console.error("接口返回错误:", res);
-            return;
-        }
+        if(res.code !== '0000') return;
 
         const { goods, teamList, teamStatistic } = res.data;
         const groupList = document.querySelector('.group-list');
@@ -161,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (this.classList.contains('group-btn')) {
                     const groupItem = this.closest('.group-item');
                     const userInfo = groupItem.querySelector('.user-info');
-                    teamId = userInfo.getAttribute('data-teamId');
+                    teamId = userInfo.dataset.teamid;
                 }
 
                 outTradeNo = generateRandomNumber(12);
@@ -213,23 +209,6 @@ document.addEventListener('DOMContentLoaded', function() {
             new Countdown(el, el.textContent);
         });
 
-    })
-    .catch(error => {
-        console.error('接口请求失败:', error);
-        console.error('错误详情:', error.message);
-        
-        // 显示友好的错误提示
-        const groupList = document.querySelector('.group-list');
-        if (groupList) {
-            groupList.innerHTML = `
-                <div class="group-item empty-tips">
-                    <div class="tips-content">
-                        网络连接失败，请检查后端服务是否启动<br/>
-                        错误信息: ${error.message}
-                    </div>
-                </div>
-            `;
-        }
     });
 
   // 支付模块
@@ -296,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(response => response.json())
     .then(res => {
+        outTradeNo = null;
         if (res.code === '0000') {
             alert('支付&结算成功！');
             window.location.reload(); // 支付成功后刷新页面
@@ -321,64 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
   })
 
 });
+</script>
 
-// 轮播图逻辑
-const swiperWrapper = document.querySelector('.swiper-wrapper');
-const pagination = document.querySelector('.swiper-pagination');
-let currentIndex = 0;
-
-// 创建分页点
-for(let i=0; i<3; i++) {
-    const dot = document.createElement('div');
-    dot.className = `swiper-dot${i===0 ? ' active' : ''}`;
-    pagination.appendChild(dot);
-}
-
-// 自动轮播
-setInterval(() => {
-    currentIndex = (currentIndex + 1) % 3;
-    swiperWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-    document.querySelectorAll('.swiper-dot').forEach((dot, index) => {
-        dot.className = `swiper-dot${index === currentIndex ? ' active' : ''}`;
-    });
-}, 3000);
-
-// 倒计时逻辑（完整实现）
-class Countdown {
-    constructor(element, initialTime) {
-        this.element = element;
-        this.remaining = this.parseTime(initialTime);
-        this.timer = null;
-        this.start();
-    }
-
-    parseTime(timeString) {
-        const [hours, minutes, seconds] = timeString.split(':').map(Number);
-        return hours * 3600 + minutes * 60 + seconds;
-    }
-
-    formatTime(seconds) {
-        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        return `${h}:${m}:${s}`;
-    }
-
-    update() {
-        this.remaining--;
-        if (this.remaining <= 0) {
-            this.element.textContent = '00:00:00';
-            this.stop();
-            return;
-        }
-        this.element.textContent = this.formatTime(this.remaining);
-    }
-
-    start() {
-        this.timer = setInterval(() => this.update(), 1000);
-    }
-
-    stop() {
-        clearInterval(this.timer);
-    }
-}
+</body>
+</html>

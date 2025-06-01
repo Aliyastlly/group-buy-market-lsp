@@ -11,9 +11,9 @@
 <!-- 轮播图 -->
 <div class="swiper-container">
     <div class="swiper-wrapper">
-        <div class="swiper-slide"><img src="./images/sku-13811216-01.png"></div>
-        <div class="swiper-slide"><img src="./images/sku-13811216-02.png"></div>
-        <div class="swiper-slide"><img src="./images/sku-13811216-03.png"></div>
+        <div class="swiper-slide"><img src="images/sku-13811216-01.png"></div>
+        <div class="swiper-slide"><img src="images/sku-13811216-02.png"></div>
+        <div class="swiper-slide"><img src="images/sku-13811216-03.png"></div>
     </div>
     <div class="swiper-pagination"></div>
 </div>
@@ -22,7 +22,7 @@
 <div class="product-info">
     <h1 class="product-title">手写MyBatis：渐进式源码实践（全彩）</h1>
     <span class="promotion-tag">大促优惠</span>
-    <span class="promotion-text">直降 ¥60，76人再抢，参与马上抢到</span>
+    <span class="promotion-text"></span>
 </div>
 
 <!-- 修改后的拼单列表结构 -->
@@ -79,8 +79,10 @@
 <div id="paymentModal" class="modal">
     <div class="modal-content">
         <h2>请扫码支付</h2>
-        <p id="paymentAmount"></p>
-        <img src="./images/sku-13811216-04.png" alt="支付二维码" class="qr-code">
+        <br/>
+        <p id="paymentAmount" style="color:red;"></p>
+        <img src="images/sku-13811216-04.png" alt="支付二维码" class="qr-code">
+        <p id="outTradeNo"></p>
         <div class="button-group">
             <button id="cancelPayment">取消支付</button>
             <button id="completePayment">支付完成</button>
