@@ -57,7 +57,9 @@ public class TradeRepository implements ITradeRepository {
         return MarketPayOrderEntity.builder()
                 .teamId(groupBuyOrderListRes.getTeamId())
                 .orderId(groupBuyOrderListRes.getOrderId())
+                .originalPrice(groupBuyOrderListRes.getOriginalPrice())
                 .deductionPrice(groupBuyOrderListRes.getDeductionPrice())
+                .payPrice(groupBuyOrderListRes.getPayPrice())
                 .tradeOrderStatusEnumVO(TradeOrderStatusEnumVO.valueOf(groupBuyOrderListRes.getStatus()))
                 .build();
     }
@@ -122,6 +124,7 @@ public class TradeRepository implements ITradeRepository {
                 .originalPrice(payDiscountEntity.getOriginalPrice())
                 .deductionPrice(payDiscountEntity.getDeductionPrice())
                 .status(TradeOrderStatusEnumVO.CREATE.getCode())
+                .payPrice(payDiscountEntity.getPayPrice())
                 .outTradeNo(payDiscountEntity.getOutTradeNo())
                 .bizId(payActivityEntity.getActivityId()+ Constants.UNDERLINE+ userEntity.getUserId()+Constants.UNDERLINE+(userTakeOrderCount+1))
                 .build();
@@ -133,9 +136,10 @@ public class TradeRepository implements ITradeRepository {
         }
 
         return MarketPayOrderEntity.builder()
-                .teamId(teamId)
                 .orderId(orderId)
+                .originalPrice(payDiscountEntity.getOriginalPrice())
                 .deductionPrice(payDiscountEntity.getDeductionPrice())
+                .payPrice(payDiscountEntity.getPayPrice())
                 .tradeOrderStatusEnumVO(TradeOrderStatusEnumVO.CREATE)
                 .build();
     }
